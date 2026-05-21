@@ -181,6 +181,49 @@ body.pcos #fx{background:repeating-linear-gradient(0deg,transparent,transparent 
   cursor:pointer;letter-spacing:.12em;text-decoration:underline;
   text-underline-offset:3px;-webkit-tap-highlight-color:transparent}
 
+/* ── Sonuç görünümü ── */
+#ds-picker-view{display:flex;flex-direction:column;align-items:center;gap:14px;width:100%}
+#ds-result-view{
+  display:none;flex-direction:column;align-items:center;gap:14px;width:100%;
+  animation:fadeUp .5s ease forwards;
+}
+#ds-result-view.show{display:flex}
+
+#drv-icon{font-size:34px;text-shadow:0 0 28px var(--nazar);
+  animation:popIn .6s ease forwards}
+#drv-phase{font-size:clamp(16px,5vw,22px);letter-spacing:.16em;font-weight:300;
+  color:var(--krem);text-transform:uppercase;text-align:center;
+  text-shadow:0 0 18px var(--nazar)}
+#drv-day{font-size:10px;letter-spacing:.2em;color:var(--gold);opacity:.75;
+  text-transform:uppercase;text-align:center}
+
+#drv-cards{display:flex;gap:8px;width:100%;max-width:320px}
+.drv-card{flex:1;background:rgba(5,3,13,.88);
+  border:1px solid rgba(201,168,76,.28);border-radius:12px;
+  padding:10px 8px;text-align:center;
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  position:relative;overflow:hidden}
+.drv-card::after{content:'';position:absolute;top:0;left:20%;right:20%;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(201,168,76,.4),transparent)}
+.drv-card-label{font-size:6.5px;letter-spacing:.18em;color:var(--gold);
+  text-transform:uppercase;opacity:.65;margin-bottom:5px}
+.drv-card-val{font-size:17px;font-weight:100;color:var(--krem);
+  text-shadow:0 0 12px var(--nazar);letter-spacing:.04em;line-height:1.1}
+.drv-card-val span{font-size:8px;color:var(--gold);opacity:.7;
+  display:block;margin-top:2px;letter-spacing:.1em}
+
+#drv-msg{font-size:10px;line-height:1.7;color:rgba(240,232,216,.62);
+  text-align:center;max-width:280px;letter-spacing:.04em;
+  border-left:2px solid var(--nazar);padding-left:10px;
+  text-shadow:none}
+
+#drv-cont{background:rgba(201,168,76,.12);border:1px solid rgba(201,168,76,.45);
+  border-radius:28px;padding:13px 34px;color:var(--krem);font-size:11px;
+  letter-spacing:.22em;text-transform:uppercase;cursor:pointer;
+  box-shadow:0 0 22px rgba(201,168,76,.18);-webkit-tap-highlight-color:transparent;
+  transition:all .2s;animation:wmPulse 2s ease-in-out infinite}
+#drv-cont:active{background:rgba(201,168,76,.25);box-shadow:0 0 38px rgba(201,168,76,.42)}
+
 /* ─── TOP BAR — sadeleştirildi ─── */
 #topbar{display:flex;justify-content:space-between;align-items:center;
   padding:calc(env(safe-area-inset-top,12px)+8px) 16px 4px;flex-shrink:0}
@@ -587,15 +630,42 @@ body.pcos #dcnum{text-shadow:0 0 22px var(--pcos1)}
 <!-- Adım 2: Regl tarihi ekranı -->
 <div id="date-screen">
   <div id="ds-scan"></div>
-  <div id="ds-logo">◉</div>
-  <div id="ds-title">Son Regl Tarihin</div>
-  <div id="ds-sub">Haritanı hesaplayalım</div>
-  <div id="ds-picker-wrap">
-    <input type="date" id="ds-date" max="">
+
+  <!-- 2a: Tarih seçici görünüm -->
+  <div id="ds-picker-view">
+    <div id="ds-logo">◉</div>
+    <div id="ds-title">Son Regl Tarihin</div>
+    <div id="ds-sub">Döngü haritanı hesaplayalım</div>
+    <div id="ds-picker-wrap">
+      <input type="date" id="ds-date" max="">
+    </div>
+    <div id="ds-result"></div>
+    <button id="ds-calc">◈ Haritamı Hesapla</button>
+    <button id="ds-skip">Elle seçmek istiyorum →</button>
   </div>
-  <div id="ds-result"></div>
-  <button id="ds-calc">◈ Haritamı Hesapla</button>
-  <button id="ds-skip">Elle seçmek istiyorum →</button>
+
+  <!-- 2b: Sonuç kartı -->
+  <div id="ds-result-view">
+    <div id="drv-icon">◉</div>
+    <div id="drv-phase"></div>
+    <div id="drv-day"></div>
+    <div id="drv-cards">
+      <div class="drv-card" id="drv-c1">
+        <div class="drv-card-label">Döngü Günün</div>
+        <div class="drv-card-val" id="drv-daynum"></div>
+      </div>
+      <div class="drv-card" id="drv-c2">
+        <div class="drv-card-label">Sonraki Regle</div>
+        <div class="drv-card-val" id="drv-nextperiod"></div>
+      </div>
+      <div class="drv-card" id="drv-c3">
+        <div class="drv-card-label">Faz Biter</div>
+        <div class="drv-card-val" id="drv-phaseend"></div>
+      </div>
+    </div>
+    <div id="drv-msg"></div>
+    <button id="drv-cont">◈ Haritama Git →</button>
+  </div>
 </div>
 
 <!-- MOD TOGGLE -->
@@ -869,14 +939,18 @@ function showDateScreen(withCam){
   updateDatePreview();
 
   $('ds-date').addEventListener('change',updateDatePreview);
-  $('ds-calc').addEventListener('click',()=>launchWithDate(withCam));
+  $('ds-calc').addEventListener('click',()=>{
+    const val=$('ds-date').value;
+    if(!val)return;
+    showResultCard(val,withCam);
+  });
   $('ds-skip').addEventListener('click',()=>launchNoDate(withCam));
 }
 
 function updateDatePreview(){
   const val=$('ds-date').value;
   if(!val){$('ds-result').textContent='';return}
-  const {dayNum,phaseKey,label}=calcPhase(val);
+  const {dayNum,label}=calcPhase(val);
   const res=$('ds-result');
   res.textContent=`Gün ${dayNum} · ${label}`;
   res.className='found';
@@ -884,26 +958,66 @@ function updateDatePreview(){
 
 function calcPhase(dateStr){
   const last=new Date(dateStr);
-  const now=new Date();
+  last.setHours(0,0,0,0);
+  const now=new Date();now.setHours(0,0,0,0);
   const diff=Math.floor((now-last)/(1000*60*60*24));
-  const dayNum=(diff%28)+1;
-  let phaseKey,label;
-  if(dayNum<=6){phaseKey='menstrual';label='Menstrüal Faz'}
-  else if(dayNum<=13){phaseKey='follicular';label='Foliküler Faz'}
-  else if(dayNum<=16){phaseKey='ovulation';label='Ovülasyon — Zirve'}
-  else{phaseKey='luteal';label='Luteal Faz'}
-  return{dayNum,phaseKey,label};
+  const cycleLen=28;
+  const dayNum=(diff%cycleLen)+1;
+
+  let phaseKey,label,phaseEndDay;
+  if(dayNum<=6){phaseKey='menstrual';label='Menstrüal Faz';phaseEndDay=6}
+  else if(dayNum<=13){phaseKey='follicular';label='Foliküler Faz';phaseEndDay=13}
+  else if(dayNum<=16){phaseKey='ovulation';label='Ovülasyon Dönemi';phaseEndDay=16}
+  else{phaseKey='luteal';label='Luteal Faz';phaseEndDay=28}
+
+  const daysInPhase=phaseEndDay-dayNum;
+  const daysToNextPeriod=cycleLen-dayNum+1;
+
+  // Faz mesajı
+  let msg='';
+  if(phaseKey==='menstrual') msg='Bariyer hassas, enerji düşük. Nazik ürünler ve dinlenme öncelikli.';
+  else if(phaseKey==='follicular') msg='Östrojen yükseliyor, cilt en parlak döneminde. Aktif bileşenleri şimdi kullan.';
+  else if(phaseKey==='ovulation') msg='LH zirve, testosteron artışta. Gözenek kontrolünü şimdi başlat.';
+  else msg='Androjen baskın dönem. Sebum artışı ve kistik akne riski yüksek — protokolü uygula.';
+
+  return{dayNum,phaseKey,label,phaseEndDay,daysInPhase,daysToNextPeriod,msg};
 }
 
-async function launchWithDate(withCam){
-  const val=$('ds-date').value;
+function showResultCard(dateStr,withCam){
+  const{dayNum,label,daysInPhase,daysToNextPeriod,msg,phaseKey}=calcPhase(dateStr);
+
+  $('ds-picker-view').style.display='none';
+  $('drv-phase').textContent=label;
+  $('drv-day').textContent=`Döngünün ${dayNum}. günündesin`;
+
+  $('drv-daynum').innerHTML=`${dayNum}<span>/ 28</span>`;
+  $('drv-nextperiod').innerHTML=`${daysToNextPeriod}<span>gün sonra</span>`;
+  $('drv-phaseend').innerHTML=`${Math.max(0,daysInPhase)}<span>gün kaldı</span>`;
+  $('drv-msg').textContent=msg;
+
+  // Faz rengine göre icon ve glow
+  const phaseColors={menstrual:'#00AEEF',follicular:'#2ec4b6',ovulation:'#C9A84C',luteal:'#e63946'};
+  const col=phaseColors[phaseKey]||'#00AEEF';
+  $('drv-icon').style.textShadow=`0 0 28px ${col}`;
+  $('drv-phase').style.textShadow=`0 0 18px ${col}`;
+  document.querySelectorAll('.drv-card').forEach(c=>{
+    c.style.borderColor=`${col}44`;
+  });
+  document.querySelectorAll('.drv-card-val').forEach(v=>{
+    v.style.textShadow=`0 0 12px ${col}`;
+  });
+
+  $('ds-result-view').classList.add('show');
+
+  // Devam Et butonu
+  $('drv-cont').onclick=()=>launchWithDate(dateStr,withCam);
+}
+
+async function launchWithDate(dateStrOrVal,withCam){
+  const val=typeof dateStrOrVal==='string'?dateStrOrVal:$('ds-date').value;
   const{dayNum,phaseKey}=val?calcPhase(val):{dayNum:1,phaseKey:'menstrual'};
   await launchApp(withCam);
-  // Otomatik gün ve faz set et
-  setTimeout(()=>{
-    updDay(dayNum);
-    reveal(phaseKey);
-  },600);
+  setTimeout(()=>{updDay(dayNum);reveal(phaseKey)},600);
 }
 
 async function launchNoDate(withCam){

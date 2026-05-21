@@ -1,0 +1,1150 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1">
+<title>Dr. Hasta — Hormonal Cilt Haritası</title>
+<style>
+:root {
+  --void:#05030d;
+  --nazar:#00AEEF;
+  --nazar-dim:rgba(0,174,239,.25);
+  --gold:#C9A84C;
+  --gold-dim:rgba(201,168,76,.22);
+  --gold2:#e8c96a;
+  --krem:#f0e8d8;
+  --red:#e63946;
+  --orange:#f4a261;
+  --teal:#2ec4b6;
+  --pcos1:#e040fb;
+  --pcos2:#f4a261;
+  --card:#05030d;
+}
+body.pcos {
+  --nazar:#e040fb; --nazar-dim:rgba(224,64,251,.25);
+  --gold:#f4a261;  --gold-dim:rgba(244,162,97,.22); --gold2:#fbbf77;
+}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;height:100%;overflow:hidden;background:var(--void);
+  font-family:'Trebuchet MS',sans-serif;-webkit-user-select:none;user-select:none;
+  touch-action:manipulation}
+
+/* ─── KAMERA ─── */
+#cam{position:fixed;inset:0;width:100%;height:100%;object-fit:cover;
+  transform:scaleX(-1);z-index:1;opacity:0;transition:opacity 1s}
+#cam.on{opacity:1}
+#bg{position:fixed;inset:0;z-index:1;display:none;
+  background:radial-gradient(ellipse at 22% 12%,rgba(0,120,180,.4) 0%,transparent 52%),
+    radial-gradient(ellipse at 80% 82%,rgba(201,168,76,.15) 0%,transparent 48%),
+    linear-gradient(168deg,#06040f,#0c071e 55%,#06040f)}
+#bg.on{display:block}
+
+/* ─── FX ─── */
+#fx{position:fixed;inset:0;z-index:2;pointer-events:none;
+  background:repeating-linear-gradient(0deg,transparent,transparent 3px,
+    rgba(0,174,239,.012) 3px,rgba(0,174,239,.012) 4px),
+  radial-gradient(ellipse at center,transparent 15%,rgba(5,3,13,.82) 100%)}
+body.pcos #fx{background:repeating-linear-gradient(0deg,transparent,transparent 3px,
+    rgba(224,64,251,.01) 3px,rgba(224,64,251,.01) 4px),
+  radial-gradient(ellipse at center,transparent 15%,rgba(8,3,15,.82) 100%)}
+
+/* ─── DATA STREAM LINES — her zaman akan ─── */
+#streams{position:fixed;inset:0;z-index:3;pointer-events:none;overflow:hidden}
+.stream{position:absolute;top:0;width:1px;height:100%;
+  background:linear-gradient(180deg,transparent 0%,var(--nazar) 50%,transparent 100%);
+  opacity:0;animation:streamFall var(--d,4s) linear var(--dl,0s) infinite}
+@keyframes streamFall{
+  0%{transform:translateY(-100%);opacity:0}
+  10%{opacity:.12}90%{opacity:.06}
+  100%{transform:translateY(100%);opacity:0}}
+
+/* ─── CORNER IMZA — her zaman görünür ─── */
+#watermark{
+  position:fixed;left:14px;bottom:calc(env(safe-area-inset-bottom,8px)+48px);
+  z-index:50;pointer-events:none;
+  display:flex;flex-direction:column;gap:1px}
+#wm-main{font-size:11px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;
+  color:var(--gold);text-shadow:0 0 12px var(--gold-dim);
+  animation:wmPulse 3s ease-in-out infinite}
+#wm-sub{font-size:6.5px;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--nazar);opacity:.7;text-shadow:0 0 8px var(--nazar-dim)}
+@keyframes wmPulse{
+  0%,100%{opacity:.7;text-shadow:0 0 8px var(--gold-dim)}
+  50%{opacity:1;text-shadow:0 0 18px var(--gold-dim),0 0 40px var(--gold-dim)}}
+
+/* ─── GİRİŞ ─── */
+#intro{position:fixed;inset:0;z-index:200;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;background:var(--void);pointer-events:none}
+#intro.out{animation:introOut .9s cubic-bezier(.7,0,.3,1) forwards}
+
+#iscan{position:absolute;left:0;right:0;height:2px;top:-2px;opacity:0;
+  background:linear-gradient(90deg,transparent,var(--nazar) 40%,var(--gold) 60%,transparent);
+  box-shadow:0 0 18px 5px var(--nazar-dim)}
+#iscan.go{animation:scanDown 1.8s cubic-bezier(.4,0,.6,1) forwards}
+
+.istar{position:absolute;border-radius:50%;background:var(--krem);opacity:0;
+  animation:twinkle var(--d,3s) ease-in-out var(--dl,0s) infinite alternate}
+@keyframes twinkle{from{opacity:0;transform:scale(.4)}to{opacity:var(--op,.4);transform:scale(1)}}
+
+#icrescent{font-size:clamp(28px,9vw,44px);color:var(--gold);
+  text-shadow:0 0 28px var(--gold-dim);opacity:0;animation:popIn .8s ease .15s forwards;
+  letter-spacing:.08em}
+#ilogo{margin-top:8px;font-size:clamp(38px,12vw,60px);opacity:0;
+  text-shadow:0 0 40px var(--nazar),0 0 80px var(--nazar-dim);
+  animation:popIn 1s ease .45s forwards;position:relative}
+#ilogo::before{content:'';position:absolute;inset:-16px;border-radius:50%;
+  border:1px solid rgba(201,168,76,.3);opacity:0;
+  animation:popIn .7s ease .8s forwards,cwS 9s linear 1.2s infinite}
+#ilogo::after{content:'';position:absolute;inset:-28px;border-radius:50%;
+  border:1px dashed rgba(0,174,239,.2);opacity:0;
+  animation:popIn .7s ease 1s forwards,ccS 15s linear 1.4s infinite}
+
+/* DR.HASTA — büyük intro imzası */
+#idr{margin-top:18px;text-align:center;opacity:0;animation:fadeUp .7s ease .9s forwards}
+#idr-main{font-size:clamp(18px,5.5vw,26px);letter-spacing:.3em;font-weight:700;
+  text-transform:uppercase;color:var(--gold);
+  text-shadow:0 0 24px var(--gold-dim),0 0 60px rgba(201,168,76,.15)}
+#idr-dot{font-size:10px;letter-spacing:.2em;color:var(--nazar);opacity:.8;
+  margin-top:4px;text-transform:uppercase;text-shadow:0 0 10px var(--nazar-dim)}
+#idr-sub{font-size:7.5px;letter-spacing:.16em;color:var(--krem);opacity:.45;
+  margin-top:6px;text-transform:uppercase}
+
+#iboot{margin-top:26px;text-align:left;width:min(270px,78vw);opacity:0;
+  animation:fadeUp .5s ease 1.4s forwards}
+.bl{font-size:8.5px;letter-spacing:.1em;color:rgba(0,174,239,.5);
+  text-transform:uppercase;line-height:2.1;opacity:0}
+.bl.on{opacity:1}.bl.ok{color:rgba(201,168,76,.7)}.bl.ok::after{content:' ✓'}
+
+#ibar-wrap{margin-top:16px;width:min(190px,58vw);height:2px;
+  background:rgba(201,168,76,.1);border-radius:1px;overflow:hidden;opacity:0;
+  animation:fadeUp .4s ease 1.5s forwards}
+#ibar{height:100%;width:0%;background:linear-gradient(90deg,var(--nazar),var(--gold));
+  box-shadow:0 0 8px var(--nazar);transition:width .28s ease}
+
+#ientr{margin-top:24px;background:rgba(201,168,76,.1);border:1px solid rgba(201,168,76,.45);
+  border-radius:28px;padding:13px 34px;color:var(--krem);font-size:11px;
+  letter-spacing:.26em;text-transform:uppercase;cursor:pointer;
+  box-shadow:0 0 24px rgba(201,168,76,.18);opacity:0;pointer-events:none;
+  -webkit-tap-highlight-color:transparent;
+  transition:opacity .5s,background .2s,box-shadow .2s}
+#ientr.on{opacity:1;pointer-events:all}
+#ientr:active{background:rgba(201,168,76,.25);box-shadow:0 0 40px rgba(201,168,76,.45)}
+#ibyp{font-size:8px;color:rgba(0,174,239,.4);background:none;border:none;cursor:pointer;
+  letter-spacing:.1em;text-decoration:underline;text-underline-offset:3px;
+  display:block;margin:10px auto 0;opacity:0;pointer-events:none;transition:opacity .4s;
+  -webkit-tap-highlight-color:transparent}
+#ibyp.on{opacity:1;pointer-events:all}
+
+/* ─── HUD ─── */
+#hud{position:fixed;inset:0;z-index:10;pointer-events:none;
+  opacity:0;transition:opacity .8s ease;
+  display:flex;flex-direction:column}
+#hud.on{opacity:1}
+
+/* ─── TARİH EKRANI (Adım 2) ─── */
+#date-screen{
+  position:fixed;inset:0;z-index:190;
+  display:none;flex-direction:column;
+  align-items:center;justify-content:center;
+  background:var(--void);gap:14px;padding:40px 32px;text-align:center;
+}
+#date-screen.show{display:flex}
+#ds-scan{position:absolute;left:0;right:0;height:2px;top:-2px;opacity:0;
+  background:linear-gradient(90deg,transparent,var(--nazar) 40%,var(--gold) 60%,transparent);
+  box-shadow:0 0 14px 4px var(--nazar-dim)}
+#ds-scan.go{animation:scanDown 1.4s cubic-bezier(.4,0,.6,1) forwards}
+#ds-logo{font-size:36px;text-shadow:0 0 30px var(--nazar)}
+#ds-title{font-size:clamp(15px,4.5vw,20px);letter-spacing:.16em;font-weight:300;
+  color:var(--krem);text-transform:uppercase;text-shadow:0 0 18px var(--nazar)}
+#ds-sub{font-size:9.5px;letter-spacing:.18em;color:var(--gold);opacity:.7;text-transform:uppercase}
+#ds-picker-wrap{background:rgba(5,3,13,.88);border:1px solid rgba(201,168,76,.32);
+  border-radius:16px;padding:14px 22px;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+#ds-date{background:transparent;border:none;outline:none;color:var(--gold2);
+  font-size:20px;letter-spacing:.06em;font-family:'Trebuchet MS',sans-serif;
+  -webkit-tap-highlight-color:transparent;cursor:pointer;color-scheme:dark}
+#ds-result{font-size:10.5px;letter-spacing:.12em;color:var(--nazar);
+  text-transform:uppercase;text-shadow:0 0 10px var(--nazar-dim);
+  min-height:16px;transition:all .3s ease;padding:2px 0}
+#ds-result.found{color:var(--gold2);text-shadow:0 0 10px var(--gold-dim)}
+#ds-calc{background:rgba(201,168,76,.12);border:1px solid rgba(201,168,76,.45);
+  border-radius:28px;padding:13px 34px;color:var(--krem);font-size:11px;
+  letter-spacing:.22em;text-transform:uppercase;cursor:pointer;
+  box-shadow:0 0 22px rgba(201,168,76,.18);-webkit-tap-highlight-color:transparent;transition:all .2s}
+#ds-calc:active{background:rgba(201,168,76,.25);box-shadow:0 0 38px rgba(201,168,76,.42)}
+#ds-skip{font-size:8.5px;color:rgba(0,174,239,.42);background:none;border:none;
+  cursor:pointer;letter-spacing:.12em;text-decoration:underline;
+  text-underline-offset:3px;-webkit-tap-highlight-color:transparent}
+
+/* ─── TOP BAR — sadeleştirildi ─── */
+#topbar{display:flex;justify-content:space-between;align-items:center;
+  padding:calc(env(safe-area-inset-top,12px)+8px) 16px 4px;flex-shrink:0}
+.tlbl{font-size:7px;letter-spacing:.22em;text-transform:uppercase;
+  color:var(--gold);opacity:.6;text-shadow:0 0 8px var(--gold-dim);line-height:1.8}
+#tright{text-align:right}
+#tcenter{text-align:center}
+#ttitle{font-size:clamp(9px,2.4vw,11px);letter-spacing:.28em;color:var(--krem);
+  font-weight:300;text-transform:uppercase;
+  text-shadow:0 0 14px var(--nazar),0 0 40px var(--nazar-dim)}
+#tdr{font-size:7px;letter-spacing:.14em;color:var(--gold);opacity:.72;
+  margin-top:2px;text-transform:uppercase;text-shadow:0 0 8px var(--gold-dim)}
+#pcos-badge{display:inline-block;margin-top:3px;font-size:6px;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--pcos1);background:rgba(224,64,251,.1);
+  border:1px solid rgba(224,64,251,.35);border-radius:20px;padding:2px 8px;
+  text-shadow:0 0 8px var(--pcos1);opacity:0;transform:scale(.85);
+  transition:opacity .4s,transform .4s}
+body.pcos #pcos-badge{opacity:1;transform:scale(1)}
+
+/* ─── WHEEL ZONE — flex row: [butonlar] [wheel] [butonlar] ─── */
+#wz{flex:0 0 auto;display:flex;align-items:center;justify-content:center;
+  position:relative;padding:4px 6px;gap:0}
+#wz::before{content:'';position:absolute;
+  width:min(86vw,350px);height:min(86vw,350px);border-radius:50%;
+  pointer-events:none;
+  background:radial-gradient(circle,rgba(0,174,239,.07) 0%,transparent 60%);
+  animation:auraPulse 5s ease-in-out infinite;transition:background .5s}
+body.pcos #wz::before{background:radial-gradient(circle,rgba(224,64,251,.09) 0%,transparent 60%)}
+
+#cw{width:min(44vw,195px);height:min(44vw,195px);position:relative;flex-shrink:0}
+
+/* Dönen ışık noktası — wheel etrafında sürekli döner */
+#orb{position:absolute;top:50%;left:50%;z-index:8;pointer-events:none;
+  width:10px;height:10px;border-radius:50%;
+  background:var(--gold);box-shadow:0 0 12px var(--gold),0 0 28px var(--gold-dim);
+  transform-origin:0 0;animation:orbOrbit 4s linear infinite}
+#orb2{position:absolute;top:50%;left:50%;z-index:8;pointer-events:none;
+  width:6px;height:6px;border-radius:50%;
+  background:var(--nazar);box-shadow:0 0 10px var(--nazar),0 0 22px var(--nazar-dim);
+  transform-origin:0 0;animation:orbOrbit2 7s linear infinite}
+
+.rw{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);border-radius:50%}
+.rw1{width:100%;height:100%}
+.rw2{width:76%;height:76%}
+.rw3{width:54%;height:54%}
+.rw4{width:33%;height:33%}
+.ring{width:100%;height:100%;border-radius:50%;transition:border-color .5s,box-shadow .5s}
+
+.r1{border:1.5px solid rgba(201,168,76,.32);
+  box-shadow:0 0 22px rgba(201,168,76,.1);animation:cwS 22s linear infinite}
+.r2{border:1px dashed rgba(0,174,239,.38);
+  box-shadow:0 0 14px rgba(0,174,239,.1);animation:ccS 14s linear infinite}
+.r3{border:1.5px solid rgba(201,168,76,.52);
+  box-shadow:0 0 20px rgba(201,168,76,.2);animation:cwS 8s linear infinite}
+.r4{border:1px solid rgba(0,174,239,.65);
+  background:radial-gradient(circle,rgba(0,174,239,.16) 0%,transparent 70%);
+  box-shadow:0 0 18px rgba(0,174,239,.3);animation:ccS 4.5s linear infinite}
+
+body.pcos .r1{border-color:rgba(224,64,251,.32);box-shadow:0 0 22px rgba(224,64,251,.12)}
+body.pcos .r2{border-color:rgba(244,162,97,.38);box-shadow:0 0 14px rgba(244,162,97,.1)}
+body.pcos .r3{border-color:rgba(224,64,251,.52);box-shadow:0 0 20px rgba(224,64,251,.2)}
+body.pcos .r4{border-color:rgba(224,64,251,.65);
+  background:radial-gradient(circle,rgba(224,64,251,.16) 0%,transparent 70%);
+  box-shadow:0 0 18px rgba(224,64,251,.3)}
+
+#cw.turbo .r1{animation:cwS 1.3s linear infinite,glowGold .4s ease-in-out infinite alternate}
+#cw.turbo .r2{animation:ccS .8s linear infinite}
+#cw.turbo .r3{animation:cwS .5s linear infinite,glowNazar .35s ease-in-out infinite alternate}
+#cw.turbo .r4{animation:ccS .3s linear infinite}
+
+.tick{position:absolute;top:50%;left:50%;transform-origin:0 0;transition:background .5s}
+body.pcos .tick{background:rgba(224,64,251,.28)!important}
+body.pcos .tick.mj{background:rgba(224,64,251,.65)!important}
+
+.ddot{position:absolute;border-radius:50%;background:rgba(201,168,76,.28);
+  top:50%;left:50%;transform:translate(-50%,-50%);
+  transition:all .3s ease;pointer-events:none}
+.ddot.key{background:var(--gold);box-shadow:0 0 5px var(--gold);width:6px;height:6px}
+.ddot.active{background:var(--gold2);box-shadow:0 0 14px var(--gold2),0 0 28px var(--gold-dim);
+  width:11px;height:11px;animation:dotPulse .85s ease-in-out infinite alternate}
+body.pcos .ddot.key{background:var(--pcos1);box-shadow:0 0 5px var(--pcos1)}
+
+/* Nazar gözü */
+#neye{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  z-index:7;pointer-events:none}
+
+#wc{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  text-align:center;z-index:8;pointer-events:none;min-width:76px}
+#wd{font-size:clamp(19px,5.8vw,27px);font-weight:100;color:var(--krem);line-height:1;
+  letter-spacing:.04em;text-shadow:0 0 18px var(--nazar),0 0 45px var(--nazar-dim);
+  transition:text-shadow .5s}
+body.pcos #wd{text-shadow:0 0 18px var(--pcos1),0 0 45px rgba(224,64,251,.35)}
+#wp{font-size:7px;letter-spacing:.17em;color:var(--gold);text-transform:uppercase;
+  margin-top:4px;opacity:.85;transition:color .5s}
+
+#lf{position:absolute;inset:-18px;border-radius:50%;opacity:0;pointer-events:none;
+  background:radial-gradient(circle,rgba(0,174,239,.45) 0%,transparent 65%);transition:background .5s}
+#lf.go{animation:lockFlash 1.5s ease-out forwards}
+body.pcos #lf{background:radial-gradient(circle,rgba(224,64,251,.45) 0%,transparent 65%)}
+
+#arcs{position:absolute;inset:-22px;width:calc(100% + 44px);height:calc(100% + 44px);
+  pointer-events:none;overflow:visible;opacity:0;transition:opacity .6s ease .3s}
+#arcs.on{opacity:1}
+
+/* ─── MOD TOGGLE — basit, üste sabit ─── */
+#modtog{position:fixed;top:calc(env(safe-area-inset-top,12px)+8px);left:50%;
+  transform:translateX(-50%);z-index:35;pointer-events:all;
+  opacity:0;transition:opacity .4s ease .3s}
+#modtog.on{opacity:1}
+#mtbtn{background:rgba(5,3,13,.8);border:1px solid rgba(201,168,76,.28);
+  border-radius:20px;padding:5px 13px 5px 9px;display:flex;align-items:center;gap:7px;
+  cursor:pointer;-webkit-tap-highlight-color:transparent;
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);transition:all .2s}
+#mtbtn:active{transform:scale(.95)}
+.mtpill{width:26px;height:15px;border-radius:8px;background:rgba(0,174,239,.15);
+  border:1px solid rgba(0,174,239,.35);position:relative;transition:background .3s}
+.mtpill::after{content:'';width:9px;height:9px;border-radius:50%;background:var(--nazar);
+  box-shadow:0 0 6px var(--nazar);position:absolute;top:2px;left:2px;
+  transition:transform .3s,background .3s,box-shadow .3s}
+body.pcos .mtpill{background:rgba(224,64,251,.18);border-color:rgba(224,64,251,.4)}
+body.pcos .mtpill::after{transform:translateX(11px);background:var(--pcos1);box-shadow:0 0 6px var(--pcos1)}
+.mtlbls{display:flex;flex-direction:column;gap:0px}
+.mtl1{font-size:6.5px;letter-spacing:.15em;text-transform:uppercase;color:var(--krem);opacity:.5}
+.mtl2{font-size:8px;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);
+  font-weight:700;text-shadow:0 0 8px var(--gold-dim);transition:color .3s,text-shadow .3s}
+body.pcos .mtl2{color:var(--pcos1);text-shadow:0 0 8px rgba(224,64,251,.5)}
+
+/* ─── YAN BUTONLAR — flex row içinde, fixed yok ─── */
+.sc{display:flex;flex-direction:column;justify-content:center;align-items:center;
+  gap:7px;pointer-events:all;flex-shrink:0;padding:0 4px}
+.cb{background:rgba(5,3,13,.72);border:1px solid rgba(201,168,76,.26);
+  border-radius:12px;color:var(--gold);font-size:8.5px;letter-spacing:.06em;
+  padding:9px 5px;cursor:pointer;text-align:center;width:50px;
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  text-transform:uppercase;line-height:1.3;
+  -webkit-tap-highlight-color:transparent;transition:all .2s;
+  box-shadow:0 2px 12px rgba(0,0,0,.5)}
+.cb .bi{font-size:10px;display:block;margin-bottom:2px;opacity:.8}
+.cb .bd{font-size:12px;font-weight:700;display:block}
+.cb .bl2{font-size:5.5px;opacity:.5;display:block;margin-top:1px}
+.cb:active{transform:scale(.92)}
+.cb.on{border-color:var(--gold2);background:rgba(232,201,106,.14);
+  box-shadow:0 0 20px rgba(232,201,106,.3),0 2px 12px rgba(0,0,0,.5);color:var(--gold2)}
+body.pcos .cb{border-color:rgba(224,64,251,.26);color:var(--pcos1)}
+body.pcos .cb.on{border-color:var(--pcos2);color:var(--pcos2);background:rgba(244,162,97,.12);
+  box-shadow:0 0 20px rgba(244,162,97,.28),0 2px 12px rgba(0,0,0,.5)}
+
+/* ─── SCROLL BÖLGE — tüm içerik buraya ─── */
+#scroll{
+  flex:1;overflow-y:auto;overflow-x:hidden;
+  -webkit-overflow-scrolling:touch;
+  padding:6px 12px calc(env(safe-area-inset-bottom,8px)+56px);
+  pointer-events:none;opacity:0;transform:translateY(20px);
+  transition:opacity .4s ease,transform .4s cubic-bezier(.16,1,.3,1);
+  display:flex;flex-direction:column;gap:7px;
+  scrollbar-width:none;
+}
+#scroll::-webkit-scrollbar{display:none}
+#scroll.on{opacity:1;transform:translateY(0);pointer-events:all}
+
+/* Glitch */
+#ga{text-align:center;font-size:clamp(10px,3vw,13px);font-weight:800;
+  letter-spacing:.1em;text-transform:uppercase;font-style:italic;
+  line-height:1.3;display:none}
+#ga.go{display:block;animation:glitch .2s steps(1) 14,fuS .4s ease forwards}
+
+/* Cilt Denge Endeksi */
+#cde{background:rgba(5,3,13,.82);border:1px solid var(--gold-dim);
+  border-top:2px solid var(--gold);border-radius:10px;padding:9px 11px;
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  opacity:0;transform:translateY(5px);transition:all .4s ease .15s;
+  position:relative;overflow:hidden}
+#cde::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(201,168,76,.4),transparent);pointer-events:none}
+#cde.on{opacity:1;transform:translateY(0)}
+#cde-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+#cde-lbl{font-size:7px;letter-spacing:.2em;color:var(--gold);text-transform:uppercase;
+  text-shadow:0 0 6px var(--gold-dim)}
+#cde-num{font-size:21px;font-weight:100;color:var(--krem);
+  text-shadow:0 0 14px var(--nazar);letter-spacing:.04em}
+#cde-track{height:4px;background:rgba(255,255,255,.07);border-radius:2px;overflow:hidden}
+#cde-fill{height:100%;width:0%;border-radius:2px;
+  transition:width 1.4s cubic-bezier(.16,1,.3,1);
+  background:linear-gradient(90deg,var(--nazar),var(--gold),var(--red))}
+body.pcos #cde-fill{background:linear-gradient(90deg,var(--pcos1),var(--pcos2),var(--red))}
+#cde-sub{font-size:6.5px;letter-spacing:.1em;color:rgba(240,232,216,.42);margin-top:4px;text-transform:uppercase}
+
+/* Hormon çubukları */
+#hrw{display:flex;gap:7px;opacity:0;transform:translateY(5px);transition:all .4s ease .25s}
+#hrw.on{opacity:1;transform:translateY(0)}
+.hb{flex:1;background:rgba(5,3,13,.74);border:1px solid rgba(0,174,239,.16);
+  border-radius:10px;padding:7px 9px;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+.hn{font-size:7.5px;letter-spacing:.14em;color:var(--nazar);text-transform:uppercase;
+  margin-bottom:6px;text-shadow:0 0 8px var(--nazar-dim)}
+.hd{display:flex;gap:3px;flex-wrap:wrap}
+.hdt{width:5px;height:5px;border-radius:50%;background:rgba(0,174,239,.15)}
+.hdt.lit{background:var(--nazar);box-shadow:0 0 4px var(--nazar)}
+.hdt.hi{background:var(--red);box-shadow:0 0 7px var(--red),0 0 15px rgba(230,57,70,.4)}
+.hdt.phi{background:var(--pcos1);box-shadow:0 0 7px var(--pcos1),0 0 15px rgba(224,64,251,.4)}
+
+/* Teşhis */
+#dg{background:rgba(5,3,13,.84);border:1px solid var(--gold-dim);
+  border-left:2px solid var(--red);border-radius:10px;padding:8px 11px;
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  font-size:10px;line-height:1.72;color:var(--krem);
+  opacity:0;transform:translateY(5px);transition:all .4s ease .35s}
+#dg.on{opacity:1;transform:translateY(0)}
+.dv{color:var(--orange);font-weight:bold;text-shadow:0 0 5px rgba(244,162,97,.5)}
+.dvp{color:var(--pcos1);font-weight:bold;text-shadow:0 0 5px rgba(224,64,251,.5)}
+
+/* KARTLAR */
+#cards{display:flex;gap:6px;justify-content:center}
+.tc{flex:1;background:var(--card);border:1px solid rgba(201,168,76,.26);
+  border-radius:12px;padding:10px 7px 9px;text-align:center;
+  position:relative;overflow:hidden;
+  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  box-shadow:0 8px 28px rgba(0,0,0,.75),inset 0 1px 0 rgba(201,168,76,.1);
+  transform:translateY(70px) rotateY(90deg) scale(.9);opacity:0;
+  transition:transform .6s cubic-bezier(.16,1,.3,1),opacity .5s,box-shadow .3s}
+.tc::before{content:'';position:absolute;inset:0;border-radius:12px;pointer-events:none;
+  background:repeating-linear-gradient(45deg,rgba(201,168,76,.04) 0px,rgba(201,168,76,.04) 1px,
+    transparent 1px,transparent 9px),
+  repeating-linear-gradient(-45deg,rgba(201,168,76,.04) 0px,rgba(201,168,76,.04) 1px,
+    transparent 1px,transparent 9px)}
+.tc::after{content:'';position:absolute;top:0;left:15%;right:15%;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(201,168,76,.45),transparent);pointer-events:none}
+.tc.on{transform:translateY(0) rotateY(0) scale(1);opacity:1;
+  box-shadow:0 8px 28px rgba(0,0,0,.75),0 0 18px rgba(201,168,76,.1),
+    inset 0 1px 0 rgba(201,168,76,.1)}
+body.pcos .tc{border-color:rgba(224,64,251,.26)}
+body.pcos .tc.on{box-shadow:0 8px 28px rgba(0,0,0,.75),0 0 18px rgba(224,64,251,.12),
+  inset 0 1px 0 rgba(224,64,251,.1)}
+
+/* 🎨 KART GÖRSELI SLOTLARI
+   .tc:nth-child(1) .ti { background-image:url('kart1.png'); background-size:cover; font-size:0; }
+   .tc:nth-child(2) .ti { background-image:url('kart2.png'); background-size:cover; font-size:0; }
+   .tc:nth-child(3) .ti { background-image:url('kart3.png'); background-size:cover; font-size:0; }
+*/
+.ti{width:38px;height:38px;margin:0 auto 7px;border-radius:8px;
+  background:linear-gradient(135deg,rgba(201,168,76,.2),rgba(0,174,239,.12));
+  border:1px solid rgba(201,168,76,.2);display:flex;align-items:center;
+  justify-content:center;font-size:17px;background-size:cover;background-position:center}
+.tn{font-size:6px;letter-spacing:.22em;color:var(--gold);opacity:.72;
+  margin-bottom:2px;text-transform:uppercase}
+.tna{font-size:8.5px;font-weight:700;color:var(--krem);text-transform:uppercase;
+  letter-spacing:.05em;line-height:1.2;margin-bottom:3px}
+.ti2{font-size:7px;color:var(--gold);letter-spacing:.04em;margin-bottom:4px;opacity:.88}
+.ta{font-size:7px;color:rgba(240,232,216,.56);line-height:1.54}
+body.pcos .tn{color:var(--pcos1)}
+body.pcos .ti2{color:var(--pcos2)}
+.spk{position:absolute;width:3px;height:3px;border-radius:50%;
+  background:var(--gold2);box-shadow:0 0 5px var(--gold2);opacity:0;pointer-events:none}
+.spk.pop{animation:spkP var(--d,.7s) ease-out forwards}
+body.pcos .spk{background:var(--pcos2);box-shadow:0 0 5px var(--pcos2)}
+
+/* ─── ALT BAR ─── */
+#btmbar{position:fixed;bottom:0;left:0;right:0;z-index:25;
+  display:flex;justify-content:space-between;align-items:center;
+  padding:6px 14px calc(env(safe-area-inset-bottom,6px)+4px);
+  pointer-events:none}
+#pslbl{font-size:7px;letter-spacing:.13em;text-transform:uppercase;
+  color:var(--gold);opacity:.58;text-shadow:0 0 8px var(--gold-dim)}
+body.pcos #pslbl{color:var(--pcos2);text-shadow:0 0 8px rgba(244,162,97,.5)}
+.bbtn{pointer-events:all;background:rgba(5,3,13,.78);border:1px solid rgba(201,168,76,.2);
+  border-radius:20px;padding:5px 14px;color:var(--gold);font-size:8px;
+  letter-spacing:.16em;cursor:pointer;backdrop-filter:blur(10px);
+  -webkit-backdrop-filter:blur(10px);text-transform:uppercase;
+  -webkit-tap-highlight-color:transparent;transition:all .2s}
+.bbtn:active{background:rgba(201,168,76,.18)}
+#rb{opacity:0;transition:opacity .3s}#rb.on{opacity:1}
+#dctbtn{position:fixed;bottom:calc(env(safe-area-inset-bottom,6px)+4px);left:50%;
+  transform:translateX(-50%);z-index:26;pointer-events:all}
+
+/* GÜN SAYACI */
+#dcpanel{position:fixed;top:calc(env(safe-area-inset-top,12px)+50px);
+  left:50%;transform:translateX(-50%) translateY(-130px);
+  z-index:30;background:rgba(5,3,13,.9);border:1px solid var(--gold-dim);
+  border-radius:18px;padding:11px 18px 13px;
+  backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+  box-shadow:0 8px 32px rgba(0,0,0,.65),0 0 20px rgba(201,168,76,.08);
+  text-align:center;opacity:0;
+  transition:transform .5s cubic-bezier(.16,1,.3,1),opacity .4s;
+  pointer-events:all;min-width:210px}
+#dcpanel.on{transform:translateX(-50%) translateY(0);opacity:1}
+#dctitle{font-size:7.5px;letter-spacing:.22em;text-transform:uppercase;
+  color:var(--gold);opacity:.68;margin-bottom:9px;text-shadow:0 0 8px var(--gold-dim)}
+#dcrow{display:flex;align-items:center;justify-content:center;gap:10px}
+.dcbtn{width:32px;height:32px;border-radius:50%;background:rgba(201,168,76,.1);
+  border:1px solid rgba(201,168,76,.3);color:var(--gold);font-size:17px;
+  cursor:pointer;-webkit-tap-highlight-color:transparent;
+  display:flex;align-items:center;justify-content:center;transition:all .15s}
+.dcbtn:active{transform:scale(.87);background:rgba(201,168,76,.22)}
+#dcnum{font-size:36px;font-weight:100;color:var(--krem);line-height:1;
+  min-width:56px;text-align:center;text-shadow:0 0 22px var(--nazar);transition:text-shadow .5s}
+body.pcos #dcnum{text-shadow:0 0 22px var(--pcos1)}
+#dclbl{font-size:7.5px;letter-spacing:.17em;color:var(--gold);text-transform:uppercase;
+  margin-top:5px;opacity:.78}
+#dcbar{margin-top:9px;display:flex;gap:3px}
+.dcseg{height:3px;border-radius:2px;flex:1;background:rgba(201,168,76,.14);
+  transition:background .3s,box-shadow .3s}
+#dchint{font-size:6.5px;letter-spacing:.13em;color:rgba(201,168,76,.32);
+  margin-top:7px;text-transform:uppercase}
+
+/* ─── NABIZ EDEN BORDER — scroll zone etrafı ─── */
+#scroll-glow{position:fixed;left:58px;right:58px;bottom:52px;top:auto;
+  height:2px;z-index:14;pointer-events:none;opacity:0;
+  background:linear-gradient(90deg,transparent,var(--nazar),transparent);
+  box-shadow:0 0 12px var(--nazar-dim);transition:opacity .4s;
+  animation:borderPulse 2s ease-in-out infinite}
+#scroll-glow.on{opacity:1}
+@keyframes borderPulse{
+  0%,100%{opacity:.3;box-shadow:0 0 8px var(--nazar-dim)}
+  50%{opacity:.8;box-shadow:0 0 18px var(--nazar-dim)}}
+
+/* LEGAL */
+#leg{position:fixed;top:calc(env(safe-area-inset-top,0px)+44px);
+  left:0;right:0;z-index:8;text-align:center;padding:0 18px;pointer-events:none}
+#leg p{font-size:6px;color:rgba(240,232,216,.22);letter-spacing:.06em;line-height:1.6}
+
+/* ─── KEYFRAMES ─── */
+@keyframes cwS{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+@keyframes ccS{from{transform:rotate(0)}to{transform:rotate(-360deg)}}
+@keyframes auraPulse{0%,100%{opacity:.6;transform:scale(1)}50%{opacity:1;transform:scale(1.06)}}
+@keyframes dotPulse{
+  from{box-shadow:0 0 10px var(--gold2),0 0 20px var(--gold-dim);transform:translate(-50%,-50%) scale(1)}
+  to{box-shadow:0 0 20px var(--gold2),0 0 40px var(--gold-dim);transform:translate(-50%,-50%) scale(1.6)}}
+@keyframes lockFlash{
+  0%{opacity:0;transform:scale(.7)}15%{opacity:1;transform:scale(1.25)}
+  55%{opacity:.6;transform:scale(1.06)}100%{opacity:0;transform:scale(1)}}
+@keyframes glowGold{
+  from{box-shadow:0 0 20px rgba(201,168,76,.12)}
+  to{box-shadow:0 0 65px rgba(201,168,76,.95),0 0 110px rgba(201,168,76,.3)}}
+@keyframes glowNazar{
+  from{box-shadow:0 0 20px rgba(0,174,239,.12)}
+  to{box-shadow:0 0 65px rgba(0,174,239,.95),0 0 110px rgba(0,174,239,.3)}}
+@keyframes glitch{
+  0%,100%{transform:skewX(0);opacity:1}20%{transform:skewX(-4deg);opacity:0}
+  40%{transform:skewX(3deg) translateX(5px);opacity:1}60%{transform:skewX(-2deg);opacity:.15}
+  80%{transform:skewX(1deg);opacity:1}}
+@keyframes fuS{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fU{
+  0%{opacity:0;transform:translateY(100vh) scale(.4)}8%{opacity:.4}92%{opacity:.22}
+  100%{opacity:0;transform:translateY(-8vh) scale(1)}}
+@keyframes spkP{
+  0%{opacity:0;transform:scale(0) translate(0,0)}30%{opacity:1}
+  100%{opacity:0;transform:scale(1.3) translate(var(--tx,0px),var(--ty,-24px))}}
+@keyframes countBounce{0%,100%{transform:scale(1)}40%{transform:scale(1.18)}}
+@keyframes introOut{
+  0%{opacity:1;transform:scale(1)}40%{opacity:1;transform:scale(1.04)}
+  100%{opacity:0;transform:scale(1.08)}}
+@keyframes scanDown{
+  0%{top:-2px;opacity:0}5%{opacity:1}95%{opacity:.8}100%{top:100%;opacity:0}}
+@keyframes popIn{from{opacity:0;transform:scale(.7) translateY(10px)}to{opacity:1;transform:scale(1) translateY(0)}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@keyframes blinkEye{
+  0%,88%,100%{transform:translate(-50%,-50%) scaleY(1)}
+  93%{transform:translate(-50%,-50%) scaleY(.08)}}
+
+/* Orbiting dots keyframes — wheel'in dışında döner */
+@keyframes orbOrbit{
+  from{transform:translate(calc(min(27vw,113px) * cos(0deg) - 5px), calc(min(27vw,113px) * sin(0deg) - 5px))}
+  to{transform:translate(calc(min(27vw,113px) * cos(360deg) - 5px), calc(min(27vw,113px) * sin(360deg) - 5px))}
+}
+@keyframes orbOrbit2{
+  from{transform:translate(calc(min(21vw,88px) * cos(180deg) - 3px), calc(min(21vw,88px) * sin(180deg) - 3px))}
+  to{transform:translate(calc(min(21vw,88px) * cos(540deg) - 3px), calc(min(21vw,88px) * sin(540deg) - 3px))}
+}
+</style>
+</head>
+<body>
+
+<video id="cam" autoplay muted playsinline></video>
+<div id="bg"></div>
+<div id="fx"></div>
+<div id="streams"></div>
+
+<!-- WATERMARK — her zaman görünür -->
+<div id="watermark">
+  <div id="wm-main">Dr. Bengi Su Ege</div>
+  <div id="wm-sub">◈ Hormonal Cilt Haritası</div>
+</div>
+
+<!-- GİRİŞ — Adım 1: Sinematik boot -->
+<div id="intro">
+  <div id="iscan"></div>
+  <div id="icrescent">☽ ✦ ☾</div>
+  <div id="ilogo">◉</div>
+  <div id="idr">
+    <div id="idr-main">Dr. Bengi Su Ege</div>
+    <div id="idr-dot">✦ Hormonal Cilt Haritası ✦</div>
+    <div id="idr-sub">Döngü Bilimi · Klinik Protokol</div>
+  </div>
+  <div id="iboot">
+    <div class="bl" id="bl1">◈ Hormon Protokolü Yükleniyor...</div>
+    <div class="bl" id="bl2">◈ Döngü Matrisi Kalibre Ediliyor</div>
+    <div class="bl" id="bl3">◈ PCOS Veri Tabanı Hazır</div>
+    <div class="bl" id="bl4">◈ Cilt Denge Endeksi Aktif</div>
+  </div>
+  <div id="ibar-wrap"><div id="ibar"></div></div>
+  <button id="ientr">◈ Sisteme Gir</button>
+  <button id="ibyp">Kamerasız devam et →</button>
+</div>
+
+<!-- Adım 2: Regl tarihi ekranı -->
+<div id="date-screen">
+  <div id="ds-scan"></div>
+  <div id="ds-logo">◉</div>
+  <div id="ds-title">Son Regl Tarihin</div>
+  <div id="ds-sub">Haritanı hesaplayalım</div>
+  <div id="ds-picker-wrap">
+    <input type="date" id="ds-date" max="">
+  </div>
+  <div id="ds-result"></div>
+  <button id="ds-calc">◈ Haritamı Hesapla</button>
+  <button id="ds-skip">Elle seçmek istiyorum →</button>
+</div>
+
+<!-- MOD TOGGLE -->
+<div id="modtog">
+  <button id="mtbtn">
+    <div class="mtpill"></div>
+    <div class="mtlbls"><span class="mtl1">Mod</span><span class="mtl2" id="mtlbl">Normal</span></div>
+  </button>
+</div>
+
+<!-- GÜN SAYACI PANELİ -->
+<div id="dcpanel">
+  <div id="dctitle">◈ Döngü Günü</div>
+  <div id="dcrow">
+    <button class="dcbtn" id="dcm">−</button>
+    <div id="dcnum">1</div>
+    <button class="dcbtn" id="dcp">+</button>
+  </div>
+  <div id="dclbl">Menstrüal Faz</div>
+  <div id="dcbar"></div>
+  <div id="dchint">Basılı tut → hızlı ilerle</div>
+</div>
+
+<!-- HUD -->
+<div id="hud">
+  <!-- TOP -->
+  <div id="topbar">
+    <div class="tlbl" id="tlft">◈ Canlı<br>Sinyal</div>
+    <div id="tcenter">
+      <div id="ttitle">Hormonal Cilt Haritası</div>
+      <div id="tdr">Dr. Bengi Su Ege</div>
+      <div id="pcos-badge">◈ PCOS Protokolü</div>
+    </div>
+    <div class="tlbl" id="tright">◈ Döngü<br>İzleme</div>
+  </div>
+
+  <!-- WHEEL — butonlar sol/sağda aynı flex row'da -->
+  <div id="wz">
+    <div class="sc" id="scl">
+      <button class="cb" data-phase="menstrual"><span class="bi">🌑</span><span class="bd">G·3</span><span class="bl2">Menstrüal</span></button>
+      <button class="cb" data-phase="follicular"><span class="bi">🌒</span><span class="bd">G·7</span><span class="bl2">Foliküler</span></button>
+    </div>
+    <div id="cw">
+      <svg id="arcs" viewBox="-22 -22 296 296"></svg>
+      <div class="rw rw1"><div class="ring r1"></div></div>
+      <div class="rw rw2"><div class="ring r2"></div></div>
+      <div class="rw rw3"><div class="ring r3"></div></div>
+      <div class="rw rw4"><div class="ring r4"></div></div>
+      <div id="tl"></div>
+      <div id="dl"></div>
+      <div id="orb"></div>
+      <div id="orb2"></div>
+      <svg id="neye" width="56" height="56" viewBox="0 0 56 56"></svg>
+      <div id="lf"></div>
+      <div id="wc"><div id="wd">☽</div><div id="wp">Döngü Haritası</div></div>
+    </div>
+    <div class="sc" id="scr">
+      <button class="cb" data-phase="ovulation"><span class="bi">🌕</span><span class="bd">G·14</span><span class="bl2">Ovülasyon</span></button>
+      <button class="cb" data-phase="luteal"><span class="bi">🌗</span><span class="bd">G·22</span><span class="bl2">Luteal</span></button>
+    </div>
+  </div>
+
+  <!-- SCROLL ZONE -->
+  <div id="scroll">
+    <div id="ga"></div>
+    <div id="cde">
+      <div id="cde-top">
+        <span id="cde-lbl">◈ Cilt Denge Endeksi</span>
+        <span id="cde-num">—</span>
+      </div>
+      <div id="cde-track"><div id="cde-fill"></div></div>
+      <div id="cde-sub"></div>
+    </div>
+    <div id="hrw">
+      <div class="hb"><div class="hn">☿ Testosteron</div><div class="hd" id="dt"></div></div>
+      <div class="hb"><div class="hn">♀ Progesteron</div><div class="hd" id="dp"></div></div>
+    </div>
+    <div id="dg"></div>
+    <div id="cards"></div>
+  </div>
+  <div id="scroll-glow"></div>
+</div>
+
+<!-- ALT BAR -->
+<div id="btmbar">
+  <div id="pslbl">◈ Sinyal bekleniyor...</div>
+  <button class="bbtn" id="rb">↺ Sıfırla</button>
+</div>
+<div id="dctbtn"><button class="bbtn" id="dctb" style="font-size:7.5px;letter-spacing:.13em;padding:5px 13px">☽ Gün Sayacı</button></div>
+
+<div id="leg"><p>Bu içerik yalnızca bilgilendirme amaçlıdır · Tıbbi tanı veya tedavi yerine geçmez · Sağlık uzmanına danışın</p></div>
+
+<script>
+'use strict';
+const $=id=>document.getElementById(id);
+
+/* ── VERİ ── */
+const NORMAL={
+  menstrual:{day:3,label:'Menstrüal Faz',days:[1,6],
+    alert:'⚡ HORMONAL DÜŞÜŞ: ÖSTROJEN MİNİMUM ⚡',ac:'#00AEEF',
+    t:3,p:2,score:72,stxt:'Bariyer Hassas — Düşük Sebum Üretimi',
+    diag:`<span class="dv">Östrojen & Progesteron:</span> Minimum seviye.<br>Sebum Üretimi: <span class="dv">%30</span> · Deri Bariyeri: <span class="dv">Hassas & Reaktif</span><br>Cilt Elementi: Anti-inflamatuvar destek öncelikli.`,
+    cards:[
+      {s:'💎',n:'I',name:'Arındırıcı',ing:'Çinko + Niasinamid',dose:'Bariyer Onarım Serumu',act:'Hasar görmüş deri bariyerini onarır, kızarıklık ve hassasiyeti giderir.'},
+      {s:'🌊',n:'II',name:'Yatıştırıcı',ing:'Panthenol %5',dose:'Sakinleştirici Formül',act:'Nem dengesini yeniler, inflamasyonu keser, reaktif cildi stabilize eder.'},
+      {s:'🌿',n:'III',name:'Dengeleyici',ing:'Omega-3 & Magnezyum',dose:'İçsel Destek Protokolü',act:'Prostaglandin dengesini kurar, cilt sağlığını hücre düzeyinde destekler.'}
+    ]},
+  follicular:{day:7,label:'Foliküler Faz',days:[7,13],
+    alert:'✦ ÖSTROJEN YÜKSELİŞİ: PARLAMA PENCERESİ ✦',ac:'#2ec4b6',
+    t:5,p:4,score:91,stxt:'Optimum Pencere — Kollajen Sentezi Aktif',
+    diag:`<span class="dv">Östrojen:</span> Yükselişte — Kollajen sentezi başladı.<br>Sebum Üretimi: <span class="dv">%45</span> · Cilt Tonu: <span class="dv">Aydınlanıyor</span><br>Cilt Elementi: Antioksidan takviye için en ideal dönem.`,
+    cards:[
+      {s:'☀️',n:'I',name:'Aydınlatıcı',ing:'C Vitamini %15',dose:'Işıltılı Serum',act:'Kollajen sentezini hızlandırır, cilt tonunu eşitler, pigmentasyonu baskılar.'},
+      {s:'🔬',n:'II',name:'Yenileyici',ing:'Retinol %0.25',dose:'Gece Yenileme Protokolü',act:'En yüksek tolerans dönemi — hücre yenilenmesini bu pencerede başlat.'},
+      {s:'🌱',n:'III',name:'Besleyici',ing:'Çinko & B Vitamini',dose:'İçsel Güçlendirici',act:'Östrojen döneminde cilt metabolizmasını ve kollajen altyapısını güçlendirir.'}
+    ]},
+  ovulation:{day:14,label:'Ovülasyon — Zirve',days:[14,16],
+    alert:'⊕ LH DALGASI: TESTOSTERON ZİRVESİNDE ⊕',ac:'#C9A84C',
+    t:10,p:6,score:58,stxt:'Sebum Artışı Başladı — Gözenek Kontrolü Kritik',
+    diag:`<span class="dv">LH + Testosteron:</span> Zirve — Sebum artışı başladı.<br>Sebum Üretimi: <span class="dv">%60</span> · Gözenek Aktivitesi: <span class="dv">Artışta</span><br>Cilt Elementi: Proaktif gözenek kontrolü hemen başlat.`,
+    cards:[
+      {s:'🫧',n:'I',name:'Berraklaştırıcı',ing:'BHA (Beta Hidroksi Asit) %1',dose:'Hafif Tonik',act:'Artan sebumu kontrol altında tutar, gözenekleri açık ve temiz bırakır.'},
+      {s:'⚖️',n:'II',name:'Dengeleyici',ing:'Niasinamid %10',dose:'Günlük Serum',act:'Sebum üretimini regüle eder, gözenek görünümünü ve mat tonu korur.'},
+      {s:'🛡️',n:'III',name:'Koruyucu',ing:'SPF 50+ & Antioksidan',dose:'Güneş Kalkanı',act:'Yoğun hormonal aktivite döneminde cilt DNA hasarını ve foto-yaşlanmayı önler.'}
+    ]},
+  luteal:{day:22,label:'Luteal Faz',days:[17,28],
+    alert:'⚡ HORMONAL TUTULMA: ANDROJENİK AKTİVİTE YÜKSEK ⚡',ac:'#e63946',
+    t:11,p:9,score:22,stxt:'KRİTİK — Androjenik Pik · Akne Riski Maksimum',
+    diag:`Sebum Üretimi: <span class="dv">%85</span> · C.acnes Aktivitesi: <span class="dv">Yüksek</span><br>Cilt Elementi: <span class="dv">Aşırı Yağlı & Aktif İnflamasyon Riski</span><br>Androjen Reseptörü aktif — hormonal akne için tetik noktası.`,
+    cards:[
+      {s:'🜃',n:'I',name:'Arındırıcı+',ing:'Salisilik Asit / BHA %2',dose:'Güçlü Temizleme',act:'Gözenek içi birikmiş sebumu çözer, androjenik retro etkisini kırar.'},
+      {s:'⚕',n:'II',name:'İyileştirici',ing:'Azelaik Asit %15-20',dose:'Onarım Formülü',act:'Kistik yangıyı ve kızarıklığı söndürür, androjen reseptörünü bloke eder.'},
+      {s:'🌿',n:'III',name:'Panzehir',ing:'Nane Çayı & Inositol',dose:'İçsel Denge Protokolü',act:'Androjenleri içeriden baskılar, hormonal döngü haritasını dengeler.'}
+    ]}
+};
+
+const PCOS={
+  menstrual:{day:3,label:'PCOS — Menstrüal',days:[1,7],
+    alert:'⚡ PCOS SİNYALİ: DÖNGÜ BAŞLIYOR ⚡',ac:'#e040fb',
+    t:5,p:1,score:48,stxt:'Kronik Androjenik Baskı — Bariyer Hassas',
+    diag:`<span class="dvp">PCOS Profili:</span> Androjen seviyesi kronik olarak yüksek.<br>Sebum Üretimi: <span class="dv">%45</span> · İnflamasyon: <span class="dv">Kronik Taban Değeri</span><br>Cilt Elementi: Bariyer onarımı ve inflamasyon kontrolü eş zamanlı.`,
+    cards:[
+      {s:'💎',n:'I',name:'Kalkan',ing:'Çinko + Niasinamid',dose:'Androjenik Bariyer Formülü',act:'Androjen kaynaklı sebum üretimini kesmez, bariyeri onarır ve stabilize eder.'},
+      {s:'🌿',n:'II',name:'Yatıştırıcı',ing:'Aloe Vera + Panthenol',dose:'Sakinleştirici Kür',act:'Kronik inflamasyonu hafifletir, PCOS kaynaklı deri hassasiyetini azaltır.'},
+      {s:'🍵',n:'III',name:'Düzenleyici',ing:'Inositol 4g/gün',dose:'İçsel PCOS Protokolü',act:'İnsülin direncini hedefler, androjen üretim aksını içeriden baskılar.'}
+    ]},
+  follicular:{day:7,label:'PCOS — Foliküler',days:[8,14],
+    alert:'✦ FOLİKÜL DİRENCİ: LH/FSH DENGESİZ ✦',ac:'#f4a261',
+    t:7,p:3,score:41,stxt:'LH/FSH Oranı Dengesiz — Sebum Kontrolü Kritik',
+    diag:`<span class="dvp">PCOS:</span> Folikül gelişimi yavaşlıyor, LH baskın.<br>Sebum Üretimi: <span class="dv">%55</span> · LH/FSH Oranı: <span class="dv">Yüksek Risk</span><br>Cilt Elementi: Proaktif sebum ve pigmentasyon kontrolü şimdi başlat.`,
+    cards:[
+      {s:'🌸',n:'I',name:'Dengeleyici',ing:'C Vitamini %15 + Niasinamid',dose:'Çift Etkili Serum',act:'Hiperpigmentasyonu ve aşırı sebumu aynı anda hedefler.'},
+      {s:'🔬',n:'II',name:'Düzeltici',ing:'Azelaik Asit %15',dose:'PCOS Düzeltme Serumu',act:'Androjen kaynaklı komedonu ve PIH pigmentasyonunu birlikte baskılar.'},
+      {s:'🍵',n:'III',name:'Hormon Ritüeli',ing:'Nane Çayı 2x/gün',dose:'Günlük Ritüel',act:'Anti-androjenik etki — LH dalgalanmasını doğal yoldan modüle eder.'}
+    ]},
+  ovulation:{day:14,label:'PCOS — Gecikmeli Ovülasyon',days:[15,21],
+    alert:'⚠ OVÜLASYONs GECİKMESİ: ANDROJENİK ZİRVE UZUYOR ⚠',ac:'#e040fb',
+    t:12,p:4,score:18,stxt:'KRİTİK — Androjenik Zirve Uzadı · Kistik Akne Riski',
+    diag:`<span class="dvp">PCOS Ovülasyon:</span> Gecikmeli ya da eksik — androjen zirve süresi uzuyor.<br>Sebum Üretimi: <span class="dv">%75</span> · Kistik Akne Riski: <span class="dv">Yüksek</span><br>Cilt Elementi: Acil androjenik baskılama protokolü devreye girmeli.`,
+    cards:[
+      {s:'🫧',n:'I',name:'Güçlü Arındırıcı',ing:'BHA %2 + Kükürt',dose:'PCOS Temizleme Kürü',act:'PCOS sebumunu derin katmanlarda çözer, C.acnes aktivitesini kırar.'},
+      {s:'⚕',n:'II',name:'Yoğun İyileştirici',ing:'Azelaik Asit %20',dose:'Maksimum Onarım',act:'Kistik yangıyı söndürür ve PIH oluşumunu baştan keser.'},
+      {s:'💊',n:'III',name:'Androjen Kesici',ing:'Saw Palmetto + Inositol',dose:'Çift Baskılama Protokolü',act:'5-alfa redüktazı bloke eder, testosteron→DHT dönüşümünü keser.'}
+    ]},
+  luteal:{day:22,label:'PCOS — Luteal Kriz',days:[22,35],
+    alert:'🔴 PCOS KRİZİ: HİPERANDROJENİZM AKTİF ⚡',ac:'#e040fb',
+    t:12,p:2,score:8,stxt:'ALARM — Hiperandrojenizm · Acil Çok Katmanlı Müdahale',
+    diag:`<span class="dvp">HİPERANDROJENİZM:</span> Testosteron zirve · Progesteron yetersiz.<br>Sebum Üretimi: <span class="dv">%95</span> · C.acnes: <span class="dvp">KRİTİK SEVİYE</span><br>PCOS Cilt Elementi: Üç katmanlı acil protokol gerekiyor.`,
+    cards:[
+      {s:'🜃',n:'I',name:'Arındırıcı++',ing:'BHA %2 + Niasinamid',dose:'Çift Güç Kürü',act:'Gözenek içi kisti temizler, androjen reseptör kanalını kapatır.'},
+      {s:'⚕',n:'II',name:'İyileştirici++',ing:'Azelaik Asit + Bakuchiol',dose:'PCOS Onarım Rejimi',act:'Kistik yangıyı söndürür — retinoid yan etkisi olmadan güçlü yenileme.'},
+      {s:'🍵',n:'III',name:'Üçlü Panzehir',ing:'Nane + Inositol + Çinko',dose:'Üçlü Androjen Baskısı',act:'Reseptör, dönüşüm, üretim — androjeni üç noktadan birden bloke eder.'}
+    ]}
+};
+
+/* ── DURUM ── */
+let active=null,busy=false,pcos=false,day=1,dcOpen=false;
+
+/* ── AKIŞ ŞERİTLERİ ── */
+function buildStreams(){
+  const s=$('streams');
+  for(let i=0;i<18;i++){
+    const el=document.createElement('div');el.className='stream';
+    el.style.left=Math.random()*100+'%';
+    el.style.setProperty('--d',(3+Math.random()*6)+'s');
+    el.style.setProperty('--dl',(Math.random()*8)+'s');
+    s.appendChild(el);
+  }
+}
+
+/* ── NAZAR GÖZÜ ── */
+function drawEye(col='#00AEEF'){
+  const ns='http://www.w3.org/2000/svg',svg=$('neye');
+  svg.innerHTML='';
+  const eye=document.createElementNS(ns,'ellipse');
+  eye.setAttribute('cx','28');eye.setAttribute('cy','28');
+  eye.setAttribute('rx','24');eye.setAttribute('ry','16');
+  eye.setAttribute('fill','rgba(240,232,216,0.92)');
+  eye.setAttribute('stroke',col);eye.setAttribute('stroke-width','1.5');
+  svg.appendChild(eye);
+  const iris=document.createElementNS(ns,'circle');
+  iris.setAttribute('cx','28');iris.setAttribute('cy','28');iris.setAttribute('r','12');
+  iris.setAttribute('fill',col);iris.style.filter=`drop-shadow(0 0 5px ${col})`;
+  svg.appendChild(iris);
+  const pupil=document.createElementNS(ns,'circle');
+  pupil.setAttribute('cx','28');pupil.setAttribute('cy','28');pupil.setAttribute('r','6');
+  pupil.setAttribute('fill','#05030d');svg.appendChild(pupil);
+  const shine=document.createElementNS(ns,'circle');
+  shine.setAttribute('cx','22');shine.setAttribute('cy','22');shine.setAttribute('r','3');
+  shine.setAttribute('fill','rgba(240,232,216,0.85)');svg.appendChild(shine);
+  svg.style.animation='blinkEye 4s ease-in-out infinite';
+}
+
+/* ── ORB ORBIT — CSS calc cos/sin desteklenmiyorsa JS fallback ── */
+function animOrbs(){
+  const orb=$('orb'),orb2=$('orb2');
+  const cw=$('cw');
+  let t=0;
+  (function loop(){
+    const r1=(cw.offsetWidth||220)/2+10;
+    const r2=(cw.offsetWidth||220)/2*0.82;
+    orb.style.transform=`translate(${r1*Math.cos(t)-5}px,${r1*Math.sin(t)-5}px)`;
+    orb2.style.transform=`translate(${r2*Math.cos(-t*.6+Math.PI)-3}px,${r2*Math.sin(-t*.6+Math.PI)-3}px)`;
+    t+=0.018;requestAnimationFrame(loop);
+  })();
+}
+
+/* ── GİRİŞ ── */
+function runIntro(){
+  buildStreams();
+  const intro=$('intro');
+  for(let i=0;i<55;i++){
+    const s=document.createElement('div');s.className='istar';
+    const sz=.4+Math.random()*1.8;
+    s.style.cssText=`width:${sz}px;height:${sz}px;left:${Math.random()*100}%;top:${Math.random()*100}%;--d:${2+Math.random()*4}s;--dl:${Math.random()*3}s;--op:${.1+Math.random()*.5}`;
+    intro.appendChild(s);
+  }
+  setTimeout(()=>$('iscan').classList.add('go'),150);
+  const lines=[{id:'bl1',d:1400},{id:'bl2',d:2000},{id:'bl3',d:2600},{id:'bl4',d:3200}];
+  const bars=[0,28,55,80,100];
+  lines.forEach((b,i)=>{
+    setTimeout(()=>{
+      $(b.id).classList.add('on');
+      setTimeout(()=>$(b.id).classList.add('ok'),420);
+      $('ibar').style.width=bars[i+1]+'%';
+    },b.d);
+  });
+  setTimeout(()=>{$('ientr').classList.add('on');$('ibyp').classList.add('on')},3800);
+}
+
+async function enter(withCam){
+  $('ientr').style.pointerEvents='none';$('ientr').textContent='◈ Açılıyor...';
+  // Adım 2: Tarih ekranını göster
+  $('intro').classList.add('out');
+  setTimeout(()=>{
+    $('intro').style.display='none';
+    showDateScreen(withCam);
+  },700);
+}
+
+function showDateScreen(withCam){
+  const ds=$('date-screen');ds.classList.add('show');
+  setTimeout(()=>$('ds-scan').classList.add('go'),100);
+  // Max tarih = bugün
+  const today=new Date();
+  const yyyy=today.getFullYear();
+  const mm=String(today.getMonth()+1).padStart(2,'0');
+  const dd=String(today.getDate()).padStart(2,'0');
+  $('ds-date').max=`${yyyy}-${mm}-${dd}`;
+  $('ds-date').value=`${yyyy}-${mm}-${dd}`;
+  updateDatePreview();
+
+  $('ds-date').addEventListener('change',updateDatePreview);
+  $('ds-calc').addEventListener('click',()=>launchWithDate(withCam));
+  $('ds-skip').addEventListener('click',()=>launchNoDate(withCam));
+}
+
+function updateDatePreview(){
+  const val=$('ds-date').value;
+  if(!val){$('ds-result').textContent='';return}
+  const {dayNum,phaseKey,label}=calcPhase(val);
+  const res=$('ds-result');
+  res.textContent=`Gün ${dayNum} · ${label}`;
+  res.className='found';
+}
+
+function calcPhase(dateStr){
+  const last=new Date(dateStr);
+  const now=new Date();
+  const diff=Math.floor((now-last)/(1000*60*60*24));
+  const dayNum=(diff%28)+1;
+  let phaseKey,label;
+  if(dayNum<=6){phaseKey='menstrual';label='Menstrüal Faz'}
+  else if(dayNum<=13){phaseKey='follicular';label='Foliküler Faz'}
+  else if(dayNum<=16){phaseKey='ovulation';label='Ovülasyon — Zirve'}
+  else{phaseKey='luteal';label='Luteal Faz'}
+  return{dayNum,phaseKey,label};
+}
+
+async function launchWithDate(withCam){
+  const val=$('ds-date').value;
+  const{dayNum,phaseKey}=val?calcPhase(val):{dayNum:1,phaseKey:'menstrual'};
+  await launchApp(withCam);
+  // Otomatik gün ve faz set et
+  setTimeout(()=>{
+    updDay(dayNum);
+    reveal(phaseKey);
+  },600);
+}
+
+async function launchNoDate(withCam){
+  await launchApp(withCam);
+}
+
+async function launchApp(withCam){
+  $('date-screen').classList.remove('show');
+  if(withCam){
+    try{
+      const s=await navigator.mediaDevices.getUserMedia({video:{facingMode:'user',width:{ideal:1080},height:{ideal:1920}},audio:false});
+      $('cam').srcObject=s;await $('cam').play();$('cam').classList.add('on');
+    }catch(e){$('bg').classList.add('on')}
+  }else{$('bg').classList.add('on')}
+  $('hud').classList.add('on');
+  $('modtog').classList.add('on');
+  buildWheel();drawEye();animOrbs();spawnParticles();buildDcBar();updDay(1);
+}
+$('ientr').addEventListener('click',()=>enter(true));
+$('ibyp').addEventListener('click',()=>enter(false));
+
+/* ── WHEEL ── */
+function buildWheel(){
+  const cw=$('cw'),W=cw.offsetWidth||220,r=W/2,total=28;
+  const keys=new Set([1,7,14,22,28]);
+  const tl=$('tl'),dl=$('dl');
+  for(let i=0;i<total;i++){
+    const a=(i/total)*360,mj=keys.has(i+1);
+    const t=document.createElement('div');t.className='tick'+(mj?' mj':'');
+    const dist=r-(mj?6:4),rad=(a-90)*Math.PI/180;
+    t.style.cssText=`position:absolute;width:${mj?2:1}px;height:${mj?9:5}px;background:rgba(201,168,76,${mj?.65:.3});left:${r+dist*Math.cos(rad)}px;top:${r+dist*Math.sin(rad)}px;transform:translate(-50%,-50%) rotate(${a}deg);transform-origin:0 0`;
+    tl.appendChild(t);
+  }
+  for(let d=1;d<=total;d++){
+    const a=((d-1)/total)*360-90,rad=a*Math.PI/180;
+    const dr=r*.82,sz=keys.has(d)?6:3.5;
+    const dot=document.createElement('div');
+    dot.className='ddot'+(keys.has(d)?' key':'');dot.id=`d${d}`;
+    dot.style.cssText=`width:${sz}px;height:${sz}px;left:${r+dr*Math.cos(rad)}px;top:${r+dr*Math.sin(rad)}px;`;
+    dl.appendChild(dot);
+  }
+}
+
+function drawArc(pk){
+  const data=getData(pk),svg=$('arcs');svg.innerHTML='';
+  const cw=$('cw'),W=cw.offsetWidth||220,cx=W/2+22,cy=W/2+22,r=W/2+10;
+  const total=pcos?35:28;const [s,e]=data.days;
+  const sa=((s-1)/total)*360-90,ea=(e/total)*360-90;
+  const p2c=a=>{const rd=a*Math.PI/180;return{x:cx+r*Math.cos(rd),y:cy+r*Math.sin(rd)}};
+  const st=p2c(sa),en=p2c(ea),large=(ea-sa)>180?1:0;
+  const path=document.createElementNS('http://www.w3.org/2000/svg','path');
+  path.setAttribute('d',`M ${st.x} ${st.y} A ${r} ${r} 0 ${large} 1 ${en.x} ${en.y}`);
+  path.setAttribute('fill','none');path.setAttribute('stroke',data.ac);
+  path.setAttribute('stroke-width','3');path.setAttribute('stroke-linecap','round');path.setAttribute('opacity','.78');
+  path.style.filter=`drop-shadow(0 0 7px ${data.ac})`;
+  svg.appendChild(path);svg.classList.add('on');
+}
+
+/* ── GÜN SAYACI ── */
+function phaseOf(d){if(d<=6)return'menstrual';if(d<=13)return'follicular';if(d<=16)return'ovulation';return'luteal'}
+function getData(pk){return pcos?PCOS[pk]:NORMAL[pk]}
+
+function buildDcBar(){
+  const bar=$('dcbar');bar.innerHTML='';
+  ['menstrual','follicular','ovulation','luteal'].forEach(pk=>{
+    const d=getData(pk),len=d.days[1]-d.days[0]+1;
+    const seg=document.createElement('div');seg.className='dcseg';seg.id=`sg-${pk}`;
+    seg.style.flex=len;bar.appendChild(seg);
+  });
+}
+
+function updDay(d){
+  const max=pcos?35:28;
+  day=Math.max(1,Math.min(max,d));
+  $('dcnum').textContent=day;
+  $('dcnum').style.animation='countBounce .25s ease';
+  setTimeout(()=>$('dcnum').style.animation='',300);
+  const pk=phaseOf(day);const data=getData(pk);
+  $('dclbl').textContent=data.label;
+  document.querySelectorAll('.dcseg').forEach(s=>{
+    s.style.background=pcos?'rgba(224,64,251,.12)':'rgba(201,168,76,.12)';s.style.boxShadow='';
+  });
+  const seg=$(`sg-${pk}`);
+  if(seg){seg.style.background=data.ac;seg.style.boxShadow=`0 0 8px ${data.ac}`}
+  $('wd').textContent=`GÜN ${day}`;$('wp').textContent=data.label;
+  $('tright').innerHTML=`◈ Gün<br>${day}`;$('pslbl').textContent=`◈ ${data.label}`;
+}
+
+function togDc(){dcOpen=!dcOpen;$('dcpanel').classList.toggle('on',dcOpen);
+  $('dctb').textContent=dcOpen?'✕ Kapat':'☽ Gün Sayacı'}
+$('dcm').addEventListener('click',()=>updDay(day-1));
+$('dcp').addEventListener('click',()=>updDay(day+1));
+$('dctb').addEventListener('click',togDc);
+function hold(btn,delta){
+  let iv;const go=()=>{iv=setInterval(()=>updDay(day+delta*3),120)};
+  const stop=()=>clearInterval(iv);
+  btn.addEventListener('pointerdown',go);btn.addEventListener('pointerup',stop);btn.addEventListener('pointerleave',stop);
+}
+hold($('dcm'),-1);hold($('dcp'),1);
+
+/* ── PCOS TOGGLE ── */
+function togPcos(){
+  pcos=!pcos;document.body.classList.toggle('pcos',pcos);
+  $('mtlbl').textContent=pcos?'PCOS':'Normal';
+  drawEye(pcos?'#e040fb':'#00AEEF');
+  buildDcBar();updDay(day);
+  document.querySelectorAll('.amb').forEach(p=>p.remove());spawnParticles();
+  if(active){const ph=active;resetAll();setTimeout(()=>reveal(ph),350)}
+}
+$('mtbtn').addEventListener('click',togPcos);
+
+/* ── REVEAL ── */
+function reveal(pk){
+  if(busy)return;busy=true;
+  const data=getData(pk);active=pk;updDay(data.day);
+  document.querySelectorAll('.cb').forEach(b=>b.classList.toggle('on',b.dataset.phase===pk));
+  document.querySelectorAll('.ddot').forEach(d=>d.classList.remove('active'));
+  const ad=$(`d${data.day}`);if(ad)ad.classList.add('active');
+  $('wd').textContent=`GÜN ${data.day}`;$('wp').textContent=data.label;
+  drawEye(data.ac);
+
+  const cw=$('cw');cw.classList.add('turbo');
+  const lf=$('lf');lf.classList.remove('go');void lf.offsetWidth;lf.classList.add('go');
+  setTimeout(()=>cw.classList.remove('turbo'),1900);
+
+  $('arcs').classList.remove('on');setTimeout(()=>drawArc(pk),420);
+
+  const scroll=$('scroll');scroll.classList.add('on');$('scroll-glow').classList.add('on');
+
+  // Glitch
+  const ga=$('ga');ga.style.color=data.ac;
+  ga.style.textShadow=`0 0 12px ${data.ac},0 0 32px ${data.ac}66`;
+  ga.textContent=data.alert;ga.style.display='none';ga.classList.remove('go');
+  setTimeout(()=>{ga.style.display='block';void ga.offsetWidth;ga.classList.add('go')},200);
+
+  // Skor
+  setTimeout(()=>{
+    const cde=$('cde');cde.classList.add('on');
+    $('cde-num').textContent='0';$('cde-fill').style.width='0%';$('cde-sub').textContent=data.stxt;
+    let cur=0,tgt=data.score,step=Math.ceil(tgt/40);
+    const iv=setInterval(()=>{
+      cur=Math.min(cur+step,tgt);$('cde-num').textContent=cur;$('cde-fill').style.width=cur+'%';
+      const col=cur<30?'#e63946':cur<60?'#f4a261':cur<80?'#C9A84C':'#2ec4b6';
+      $('cde-num').style.textShadow=`0 0 14px ${col}`;$('cde-num').style.color=col;
+      if(cur>=tgt)clearInterval(iv);
+    },32);
+  },440);
+
+  setTimeout(()=>{
+    const hrw=$('hrw');hrw.classList.add('on');
+    fillDots($('dt'),12,data.t,8,pcos&&data.t>=11);
+    fillDots($('dp'),12,data.p,8,false);
+  },680);
+
+  setTimeout(()=>{$('dg').innerHTML=data.diag;$('dg').classList.add('on')},980);
+  setTimeout(()=>buildCards(data.cards),1280);
+
+  $('rb').classList.add('on');
+  setTimeout(()=>{busy=false},1900);
+}
+
+/* ── DOTS & CARDS ── */
+function fillDots(container,total,lit,hi,isPhi){
+  container.innerHTML='';
+  for(let i=0;i<total;i++){
+    const d=document.createElement('div');d.className='hdt';
+    if(i<lit){
+      d.classList.add('lit');
+      if(i>=hi&&isPhi)d.classList.add('phi');
+      else if(i>=hi)d.classList.add('hi');
+      d.style.opacity='0';
+      setTimeout(()=>{d.style.transition='all .15s';d.style.opacity='1'},i*50);
+    }
+    container.appendChild(d);
+  }
+}
+
+function buildCards(cards){
+  const tr=$('cards');tr.innerHTML='';
+  cards.forEach((c,i)=>{
+    const card=document.createElement('div');card.className='tc';
+    card.innerHTML=`<div class="ti">${c.s}</div><div class="tn">${c.n} — ${c.name}</div>
+      <div class="tna">${c.ing}</div><div class="ti2">${c.dose}</div><div class="ta">${c.act}</div>`;
+    for(let s=0;s<8;s++){
+      const sp=document.createElement('div');sp.className='spk';
+      sp.style.cssText=`left:${4+Math.random()*90}%;top:${4+Math.random()*90}%;--tx:${(Math.random()-.5)*30}px;--ty:${-(8+Math.random()*30)}px;--d:${.5+Math.random()*.55}s;`;
+      card.appendChild(sp);
+    }
+    tr.appendChild(card);
+    setTimeout(()=>{
+      card.classList.add('on');
+      card.querySelectorAll('.spk').forEach((sp,si)=>{
+        setTimeout(()=>{sp.classList.add('pop');setTimeout(()=>sp.classList.remove('pop'),950)},si*60);
+      });
+    },i*180);
+  });
+  // Scroll to cards after reveal
+  setTimeout(()=>$('scroll').scrollTo({top:$('scroll').scrollHeight,behavior:'smooth'}),600);
+}
+
+/* ── SIFIRLA ── */
+function resetAll(){
+  active=null;busy=false;
+  document.querySelectorAll('.cb').forEach(b=>b.classList.remove('on'));
+  document.querySelectorAll('.ddot').forEach(d=>d.classList.remove('active'));
+  $('wd').textContent=dcOpen?`GÜN ${day}`:'☽';$('wp').textContent='Döngü Haritası';
+  $('pslbl').textContent='◈ Sinyal bekleniyor...';
+  $('tright').innerHTML='◈ Döngü<br>İzleme';
+  $('scroll').classList.remove('on');$('scroll-glow').classList.remove('on');
+  $('hrw').classList.remove('on');$('dg').classList.remove('on');$('cde').classList.remove('on');
+  $('ga').classList.remove('go');$('ga').style.display='none';
+  $('rb').classList.remove('on');$('cw').classList.remove('turbo');
+  $('arcs').classList.remove('on');$('cde-fill').style.width='0%';$('cde-num').textContent='—';
+  drawEye(pcos?'#e040fb':'#00AEEF');
+  setTimeout(()=>{$('cards').innerHTML='';$('dg').innerHTML='';$('dt').innerHTML='';$('dp').innerHTML=''},420);
+}
+
+document.querySelectorAll('.cb').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    const p=btn.dataset.phase;
+    if(active===p){resetAll();return}
+    if(active){resetAll();setTimeout(()=>reveal(p),300);return}
+    reveal(p);
+  });
+});
+$('rb').addEventListener('click',resetAll);
+$('lf').addEventListener('animationend',()=>$('lf').classList.remove('go'));
+
+/* ── PARTİKÜLLER ── */
+function spawnParticles(){
+  document.querySelectorAll('.amb').forEach(p=>p.remove());
+  const cols=pcos?['#e040fb','#f4a261','#f0e8d8']:['#C9A84C','#00AEEF','#f0e8d8'];
+  for(let i=0;i<22;i++){
+    const p=document.createElement('div');p.className='amb';
+    const sz=.7+Math.random()*1.8,col=cols[Math.floor(Math.random()*cols.length)];
+    p.style.cssText=`position:fixed;border-radius:50%;z-index:3;width:${sz}px;height:${sz}px;background:${col};box-shadow:0 0 4px ${col};opacity:0;pointer-events:none;animation:fU ${7+Math.random()*11}s linear ${Math.random()*14}s infinite;left:${Math.random()*100}%`;
+    document.body.appendChild(p);
+  }
+}
+
+/* ── BOOT ── */
+const eyeStyle=document.createElement('style');
+eyeStyle.textContent=`@keyframes blinkEye{0%,88%,100%{transform:translate(-50%,-50%) scaleY(1)}93%{transform:translate(-50%,-50%) scaleY(.08)}}#neye{animation:blinkEye 4s ease-in-out infinite;transform-origin:center center;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%)}`;
+document.head.appendChild(eyeStyle);
+
+window.addEventListener('load',runIntro);
+</script>
+</body>
+</html>

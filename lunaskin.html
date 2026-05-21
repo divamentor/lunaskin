@@ -32,7 +32,9 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--void);
 
 /* ─── KAMERA ─── */
 #cam{position:fixed;inset:0;width:100%;height:100%;object-fit:cover;
-  transform:scaleX(-1);z-index:1;opacity:0;transition:opacity 1s}
+  /* scaleX(-1) = mirror, scale(.82) = uzaklaştır */
+  transform:scaleX(-1) scale(0.82);
+  z-index:1;opacity:0;transition:opacity 1s}
 #cam.on{opacity:1}
 #bg{position:fixed;inset:0;z-index:1;display:none;
   background:radial-gradient(ellipse at 22% 12%,rgba(0,120,180,.4) 0%,transparent 52%),
@@ -909,7 +911,21 @@ async function launchApp(withCam){
   $('date-screen').classList.remove('show');
   if(withCam){
     try{
-      const s=await navigator.mediaDevices.getUserMedia({video:{facingMode:'user',width:{ideal:1080},height:{ideal:1920}},audio:false});
+      const s=await navigator.mediaDevices.getUserMedia({
+        video:{
+          facingMode:'user',
+          width:{ideal:720},
+          height:{ideal:1280},
+          zoom: 1.0,          // minimum zoom
+          advanced:[{zoom:1}] // bazı tarayıcılar için
+        },
+        audio:false
+      });
+      // Zoom'u sıfırla — destekleyen cihazlarda
+      const track=s.getVideoTracks()[0];
+      if(track&&track.applyConstraints){
+        try{await track.applyConstraints({advanced:[{zoom:1}]})}catch(e){}
+      }
       $('cam').srcObject=s;await $('cam').play();$('cam').classList.add('on');
     }catch(e){$('bg').classList.add('on')}
   }else{$('bg').classList.add('on')}
